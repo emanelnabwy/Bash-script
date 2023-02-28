@@ -1,0 +1,30 @@
+#!/bin/bash
+###### monitor my system
+########every one min check  system load 
+##### get load and print its values
+###writer the load data in var/log/systemload
+#touch /etc/cron.d/monitor_system
+###and make task in every one minute "*/1 * * * * ./<name of script>"
+touch /var/log/systemload
+top -b -n 3 -d 1 |grep "load" | tail -n 1 | awk '/load average:/ { print "the load in 1MIN" $8 $9 $10 $11 $12}' >>/var/log/systemload
+
+######check increase of load and store it in file "events"  if happen more high proccess
+touch /tmp/events
+LOAD=$(top -b -n 3 -d 1 |grep "load" | tail -n 1 | awk '/load average:/ { print $10}')
+IP=$(ip a |awk '/inet 192/ {print $2}' )
+HOST=$(hostname)
+################convert number of load from float and has "," to be  interger
+LOAD_1MIN=$(echo ${LOAD} |awk 'BEGIN {FS="."} {print $1}')
+LOAD_5MIN=$(top -b -n 3 -d 1 |grep "load average" | tail -n 1 | awk '/load average:/ { print $11}')
+LOAD_15MIN=$(top -b -n 3 -d 1 |grep "load average" | tail -n 1 | awk '/load average:/ { print $10}')
+
+[ ${LOAD_1MIN} -gt 1 ]
+   ######write the event in /tmp/events
+    echo "subject: Server ${IP} load " >> /tmp/events
+    echo "Body:" >>/tmp/events
+    echo "              Dear," >>/tmp/events
+    echo "                           the hostname ${HOST}  runs with ip  {IP} has a load of " >>/tmp/events
+    echo "                            1MIN load : ${LOAD_1MIN} " >>/tmp/events
+    echo "                            5MIN load :  ${LOAD_5MIN} " >> /tmp/events
+    echo "                            15MIN load : ${LOAD_15MIN} " >>/tmp/events
+    echo "                Thankyou"  >>/tmp/events
