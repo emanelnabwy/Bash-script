@@ -1,0 +1,63 @@
+#!/bin/bash
+##do operation{+,-,*,/} in floating number and also support intergeter
+##exit
+## success 0
+NUM1=${1}
+NUM2=${2}
+OP=${3}
+
+##1:have 3 paramters
+[ ${#} -ne 3 ] && exit 1
+##2: if divide numbre 2 not equel 0
+###variable val1 refer to  frist number and val2 refer to second number
+VAL1=$(echo ${NUM1}|grep "^\-\{0,1\}[0-9]*\+[.]*[0-9]*" |wc -l)
+VAL2=$(echo ${NUM2}|grep "^\-\{0,1\}[0-9]*\+[.]*[0-9]*" |wc -l)
+
+####2:check if number is float or not......exit 2
+[ ${VAL1} -eq 0 ] && echo " number not float " && exit 2
+
+[ ${VAL2} -eq 0 ] && echo " number not float " && exit 2
+
+
+####3:divide by zere  ......exit 3
+###2> if happen error as you entre  number  float this will send this error for null
+[ ${NUM2} -eq 0 ]  2> /tmp/null  &&  echo " you cannot divide by zero " && exit 3
+
+###4:if number is interger ..........exit 4
+INT1=$(echo ${NUM1}|grep "^\-\{0,1\}[0-9]*" |wc -l)
+INT2=$(echo ${NUM2}|grep "^\-\{0,1\}[0-9]*" |wc -l)
+[ ${VAL1} -eq 0 ]
+[ ${INT1} -eq 0 ] &&  exit 4
+
+[ ${VAL2} -eq 0 ]
+[ ${INT2} -eq 0 ]  && exit 4
+
+#####5:paramerter 3 must operation from this operation{+,-,*,/} and if not ......exit 5
+##CHECK_OP=$(echo ${OP}|grep [+,-,\*,/] |wc -l )
+##[ ${CHECK_OP} -eq  0 ]  && exit 5
+case "${OP}" in
+        "+")
+           SUM=0
+           SUM=$(echo ${NUM1} + ${NUM2} | bc)
+           echo " The total is ${SUM} "
+         ;;
+        "-")
+          SUB=0
+          SUB=$(echo ${NUM1} - ${NUM2} | bc )
+          echo " the subtration is ${SUB} "
+         ;;
+       "*")
+          MUL=0
+          MUL=$(echo ${NUM1} \* ${NUM2} | bc )
+          echo " the multiple is ${MUL} "
+          ;;
+       "/")
+          DIV=0
+          DIV=$(echo ${NUM1} / ${NUM2} | bc )
+          echo " the divide is ${DIV} "
+          ;;
+       *)
+          echo "this not operation we have"
+          ;;
+esac
+exit 0
