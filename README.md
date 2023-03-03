@@ -1,2 +1,2 @@
 # Bash-script
-Training writing sript at ITI
+Training write bash sript at ITI
